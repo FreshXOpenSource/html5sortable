@@ -12,6 +12,7 @@ $.fn.html5sortable = function(options) {
 	options = $.extend({
 		connectWith: false
 	}, options);
+	var self = this;
 	return this.each(function() {
 		if (/^(enable|disable|destroy)$/.test(method)) {
 			var items = $(this).children($(this).data('items')).attr('draggable', method == 'enable');
@@ -39,7 +40,7 @@ $.fn.html5sortable = function(options) {
 			}
 			isHandle = false;
 			var dt = e.originalEvent.dataTransfer;
-			dt.effectAllowed = 'move';
+			dt.effectAllowed = 'copy';
 			dt.setData('Text', 'dummy');
 			index = (dragging = $(this)).addClass('sortable-dragging').index();
 		}).on('dragend.h5s', function() {
@@ -48,9 +49,7 @@ $.fn.html5sortable = function(options) {
 			}
 			dragging.removeClass('sortable-dragging').show();
 			placeholders.detach();
-			if (index != dragging.index()) {
-				dragging.parent().trigger('sortupdate', {item: dragging});
-			}
+	   	    dragging.parent().trigger('sortupdate', {item: dragging});
 			dragging = null;
 		}).not('a[href], img').on('selectstart.h5s', function() {
 			this.dragDrop && this.dragDrop();
@@ -59,20 +58,35 @@ $.fn.html5sortable = function(options) {
 			if (!items.is(dragging) && options.connectWith !== $(dragging).parent().data('connectWith')) {
 				return true;
 			}
+
+			var targets = dragging.attr('data-targets');
+			if(targets && targets.split(',').indexOf(self.attr('data-key')) === -1) {
+				return true;
+			}
+
 			if (e.type == 'drop') {
 				e.stopPropagation();
+
+				if(dragging.parent().is(placeholders.filter(':visible').parent())) {
+					dragging.detach();
+				} else {
+					dragging.removeClass('sortable-dragging').show();
+				} 
+
 				dragging = dragging.clone(true)
 				dragging.insertAfter(placeholders.filter(':visible'));
 				dragging.trigger('dragend.h5s');
 				return false;
 			}
 			e.preventDefault();
-			e.originalEvent.dataTransfer.dropEffect = 'move';
+			e.originalEvent.dataTransfer.dropEffect = 'copy';
 			if (items.is(this)) {
 				if (options.forcePlaceholderSize) {
 					placeholder.height(dragging.outerHeight());
 				}
-				dragging.hide();
+				if(!targets || targets.split(',').indexOf(dragging.parent().attr('data-key')) !== -1) {
+					dragging.hide();
+				}
 				$(this)[placeholder.index() < $(this).index() ? 'after' : 'before'](placeholder);
 				placeholders.not(placeholder).detach();
 			} else if (!placeholders.is(this) && !$(this).children(options.items).length) {
