@@ -7,7 +7,7 @@
  */
 (function($) {
 var dragging, placeholders = $();
-$.fn.sortable = function(options) {
+$.fn.html5sortable = function(options) {
 	var method = String(options);
 	options = $.extend({
 		connectWith: false
@@ -61,7 +61,7 @@ $.fn.sortable = function(options) {
 			}
 			if (e.type == 'drop') {
 				e.stopPropagation();
-				placeholders.filter(':visible').after(dragging);
+				placeholders.filter(':visible').after(dragging.clone());
 				dragging.trigger('dragend.h5s');
 				return false;
 			}
