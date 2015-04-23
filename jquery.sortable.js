@@ -61,7 +61,8 @@ $.fn.html5sortable = function(options) {
 			}
 			if (e.type == 'drop') {
 				e.stopPropagation();
-				dragging.clone(true).insertAfter(placeholders.filter(':visible'));
+				dragging = dragging.clone(true)
+				dragging.insertAfter(placeholders.filter(':visible'));
 				dragging.trigger('dragend.h5s');
 				return false;
 			}
