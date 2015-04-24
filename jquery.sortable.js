@@ -15,8 +15,8 @@ $.fn.html5sortable = function(options) {
 	var self = this;
 	return this.each(function() {
 		if (/^(enable|disable|destroy)$/.test(method)) {
-			var items = $(this).children($(this).data('items')).attr('draggable', method == 'enable');
-			if (method == 'destroy') {
+			var items = $(this).children($(this).data('items')).attr('draggable', method === 'enable');
+			if (method === 'destroy') {
 				items.add(this).removeData('connectWith items')
 					.off('dragstart.h5s dragend.h5s selectstart.h5s dragover.h5s dragenter.h5s drop.h5s');
 			}
@@ -29,7 +29,7 @@ $.fn.html5sortable = function(options) {
 		}).mouseup(function() {
 			isHandle = false;
 		});
-		$(this).data('items', options.items)
+		$(this).data('items', options.items);
 		placeholders = placeholders.add(placeholder);
 		if (options.connectWith) {
 			$(options.connectWith).add(this).data('connectWith', options.connectWith);
@@ -52,7 +52,9 @@ $.fn.html5sortable = function(options) {
 	   	    dragging.parent().trigger('sortupdate', {item: dragging});
 			dragging = null;
 		}).not('a[href], img').on('selectstart.h5s', function() {
-			this.dragDrop && this.dragDrop();
+			if(this.dragDrop) {
+				this.dragDrop();
+			}
 			return false;
 		}).end().add([this, placeholder]).on('dragover.h5s dragenter.h5s drop.h5s', function(e) {
 			if (!items.is(dragging) && options.connectWith !== $(dragging).parent().data('connectWith')) {
@@ -64,16 +66,23 @@ $.fn.html5sortable = function(options) {
 				return true;
 			}
 
-			if (e.type == 'drop') {
+			if (e.type === 'drop') {
 				e.stopPropagation();
 
-				if(dragging.parent().is(placeholders.filter(':visible').parent())) {
+				var parent = placeholders.filter(':visible').parent();
+
+				if(dragging.parent().is(parent)) {
 					dragging.detach();
 				} else {
 					dragging.removeClass('sortable-dragging').show();
 				} 
 
-				dragging = dragging.clone(true)
+				dragging = dragging.clone(true);
+
+				if(parent.attr('data-unique') === 'true') {
+					parent.find('[data-value="'+dragging.attr('data-value')+'"]').remove();	
+				}
+
 				dragging.insertAfter(placeholders.filter(':visible'));
 				dragging.trigger('dragend.h5s');
 				return false;
