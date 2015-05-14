@@ -89,7 +89,6 @@ $.fn.html5sortable = function(options) {
 			}
 			e.preventDefault();
 			e.originalEvent.dataTransfer.dropEffect = 'copy';
-			console.log(this);
 			if (items.is(this)) {
 				if (options.forcePlaceholderSize) {
 					placeholder.height(dragging.outerHeight()+1);
