@@ -62,7 +62,7 @@ $.fn.html5sortable = function(options) {
 			}
 
 			var targets = dragging.attr('data-targets');
-			if(targets && targets.split(',').indexOf(self.attr('data-key')) === -1) {
+			if(targets !== undefined && targets.split(',').indexOf(self.attr('data-key')) === -1) {
 				return true;
 			}
 
