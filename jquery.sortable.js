@@ -43,10 +43,25 @@ $.fn.html5sortable = function(options) {
 			dt.effectAllowed = 'copy';
 			dt.setData('Text', 'dummy');
 			index = (dragging = $(this)).addClass('sortable-dragging').index();
+
+			var targets = dragging.attr('data-targets');
+			if(targets !== undefined) {
+				targets.split(',').forEach(function(target) {
+					$('[data-key="'+target+'"]').addClass('hot');
+				});
+			}
 		}).on('dragend.h5s', function() {
 			if (!dragging) {
 				return;
 			}
+
+			var targets = dragging.attr('data-targets');
+			if(targets !== undefined) {
+				targets.split(',').forEach(function(target) {
+					$('[data-key="'+target+'"]').removeClass('hot');
+				});
+			}
+
 			dragging.removeClass('sortable-dragging').show();
 			placeholders.detach();
 	   	    dragging.parent().trigger('sortupdate', {item: dragging});
